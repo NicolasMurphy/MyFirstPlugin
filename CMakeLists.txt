@@ -22,6 +22,8 @@ juce_add_plugin(MyFirstPlugin
     PRODUCT_NAME "My First Plugin"
 )
 
+juce_generate_juce_header(MyFirstPlugin)
+
 target_sources(MyFirstPlugin PRIVATE
     Source/PluginProcessor.cpp
     Source/PluginProcessor.h

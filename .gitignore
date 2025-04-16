@@ -7,7 +7,6 @@ build/
 *.sdf
 
 # JUCE binary data
-*.vst3
 *.dll
 *.exe
 *.obj

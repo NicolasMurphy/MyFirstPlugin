@@ -7,7 +7,7 @@ The goal is to progressively build up to more complex audio effects,
 with a specific aim to implement a **comb filter** in the future.
 
 ### Stack
+- C++17
 - JUCE Framework
 - CMake
-- Visual Studio 2022
 - VST3 SDK

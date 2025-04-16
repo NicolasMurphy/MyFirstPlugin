@@ -35,3 +35,8 @@ juce::AudioProcessorEditor* MyFirstPluginAudioProcessor::createEditor() {
 
 void MyFirstPluginAudioProcessor::getStateInformation(juce::MemoryBlock&) {}
 void MyFirstPluginAudioProcessor::setStateInformation(const void*, int) {}
+
+juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
+{
+    return new MyFirstPluginAudioProcessor();
+}
