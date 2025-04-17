@@ -4,8 +4,8 @@
 MyFirstPluginAudioProcessor::MyFirstPluginAudioProcessor()
     : parameters(*this, nullptr, juce::Identifier("Params"),
         {
-            std::make_unique<juce::AudioParameterFloat>(
-                "feedback", "Feedback", -2.0f, 2.0f, 0.5f)
+            std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", -2.0f, 2.0f, 0.5f),
+            std::make_unique<juce::AudioParameterFloat>("delayTime", "Delay Time", 1.0f, 48000.0f, 4800.0f)
         })
 {}
 
@@ -38,9 +38,9 @@ void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     const int numChannels = buffer.getNumChannels();
     const int numSamples = buffer.getNumSamples();
     const int delayBufferSize = delayBuffer.getNumSamples();
-    const int delayTimeInSamples = 4800;
 
     float feedback = *parameters.getRawParameterValue("feedback");
+    int delayTimeInSamples = static_cast<int>(*parameters.getRawParameterValue("delayTime"));
 
     for (int channel = 0; channel < numChannels; ++channel)
     {

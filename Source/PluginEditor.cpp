@@ -4,18 +4,25 @@
 MyFirstPluginAudioProcessorEditor::MyFirstPluginAudioProcessorEditor(MyFirstPluginAudioProcessor& p)
     : AudioProcessorEditor(&p), audioProcessor(p)
 {
-    // Configure the feedback slider
+    // Feedback slider
     feedbackSlider.setSliderStyle(juce::Slider::Rotary);
     feedbackSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
     feedbackSlider.setRange(-2.0f, 2.0f, 0.01f);
     addAndMakeVisible(feedbackSlider);
 
-    // Attach the slider to the parameter
     feedbackAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
         audioProcessor.getState(), "feedback", feedbackSlider);
 
-    // Set the window size
-    setSize(200, 200);
+    // Delay slider
+    delaySlider.setSliderStyle(juce::Slider::LinearHorizontal);
+    delaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
+    delaySlider.setRange(1.0f, 48000.0f, 1.0f);
+    addAndMakeVisible(delaySlider);
+
+    delayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
+        audioProcessor.getState(), "delayTime", delaySlider);
+
+    setSize(240, 260);
 }
 
 MyFirstPluginAudioProcessorEditor::~MyFirstPluginAudioProcessorEditor() {}
@@ -23,12 +30,16 @@ MyFirstPluginAudioProcessorEditor::~MyFirstPluginAudioProcessorEditor() {}
 void MyFirstPluginAudioProcessorEditor::paint(juce::Graphics& g)
 {
     g.fillAll(juce::Colours::black);
+
     g.setColour(juce::Colours::white);
     g.setFont(15.0f);
-    g.drawFittedText("Feedback", getLocalBounds(), juce::Justification::centredTop, 1);
+
+    g.drawFittedText("Feedback", juce::Rectangle<int>(60, 5, 120, 20), juce::Justification::centred, 1);
+    g.drawFittedText("Delay Time", juce::Rectangle<int>(30, 170, 180, 20), juce::Justification::centred, 1);
 }
 
 void MyFirstPluginAudioProcessorEditor::resized()
 {
-    feedbackSlider.setBounds(40, 50, 120, 120);
+    feedbackSlider.setBounds(60, 20, 120, 120);
+    delaySlider.setBounds(30, 190, 180, 30);
 }
