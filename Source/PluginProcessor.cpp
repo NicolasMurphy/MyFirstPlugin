@@ -1,7 +1,14 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
-MyFirstPluginAudioProcessor::MyFirstPluginAudioProcessor() {}
+MyFirstPluginAudioProcessor::MyFirstPluginAudioProcessor()
+    : parameters(*this, nullptr, juce::Identifier("Params"),
+        {
+            std::make_unique<juce::AudioParameterFloat>(
+                "feedback", "Feedback", -2.0f, 2.0f, 0.5f)
+        })
+{}
+
 MyFirstPluginAudioProcessor::~MyFirstPluginAudioProcessor() {}
 
 const juce::String MyFirstPluginAudioProcessor::getName() const { return "MyFirstPlugin"; }
@@ -16,9 +23,9 @@ void MyFirstPluginAudioProcessor::setCurrentProgram(int) {}
 const juce::String MyFirstPluginAudioProcessor::getProgramName(int) { return {}; }
 void MyFirstPluginAudioProcessor::changeProgramName(int, const juce::String&) {}
 
-void MyFirstPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
+void MyFirstPluginAudioProcessor::prepareToPlay(double sampleRate, int)
 {
-    const int delayBufferSize = static_cast<int>(2.0 * sampleRate); // 2 seconds max delay
+    const int delayBufferSize = static_cast<int>(2.0 * sampleRate);
     delayBuffer.setSize(getTotalNumOutputChannels(), delayBufferSize);
     delayBuffer.clear();
     delayWritePosition = 0;
@@ -31,8 +38,9 @@ void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     const int numChannels = buffer.getNumChannels();
     const int numSamples = buffer.getNumSamples();
     const int delayBufferSize = delayBuffer.getNumSamples();
-    const int delayTimeInSamples = 4800; // ~0.1 sec delay at 48kHz
-    const float feedback = 0.5f;         // Feedback amount (can go negative for different comb behavior)
+    const int delayTimeInSamples = 4800;
+
+    float feedback = *parameters.getRawParameterValue("feedback");
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
@@ -45,26 +53,32 @@ void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
             const int writePosition = (delayWritePosition + i) % delayBufferSize;
 
             float delayedSample = delayData[readPosition];
-
-            // Write input + feedback into delay buffer
             delayData[writePosition] = channelData[i] + (feedback * delayedSample);
-
-            // Mix delayed sample with dry signal (simple mix here — you could separate dry/wet later)
             channelData[i] += delayedSample;
         }
     }
 
-    delayWritePosition = (delayWritePosition + numSamples) % delayBufferSize;
+    delayWritePosition = (delayWritePosition + numSamples) % delayBuffer.getNumSamples();
 }
 
 bool MyFirstPluginAudioProcessor::hasEditor() const { return true; }
+
 juce::AudioProcessorEditor* MyFirstPluginAudioProcessor::createEditor()
 {
     return new MyFirstPluginAudioProcessorEditor(*this);
 }
 
-void MyFirstPluginAudioProcessor::getStateInformation(juce::MemoryBlock&) {}
-void MyFirstPluginAudioProcessor::setStateInformation(const void*, int) {}
+void MyFirstPluginAudioProcessor::getStateInformation(juce::MemoryBlock& destData)
+{
+    juce::MemoryOutputStream(destData, true).writeString(parameters.state.toXmlString());
+}
+
+void MyFirstPluginAudioProcessor::setStateInformation(const void* data, int sizeInBytes)
+{
+    auto xml = juce::parseXML(juce::String::createStringFromData(static_cast<const char*>(data), sizeInBytes));
+    if (xml)
+        parameters.state = juce::ValueTree::fromXml(*xml);
+}
 
 juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {

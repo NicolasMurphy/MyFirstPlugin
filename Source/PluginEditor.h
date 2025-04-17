@@ -3,7 +3,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-class MyFirstPluginAudioProcessorEditor : public juce::AudioProcessorEditor
+class MyFirstPluginAudioProcessorEditor  : public juce::AudioProcessorEditor
 {
 public:
     MyFirstPluginAudioProcessorEditor(MyFirstPluginAudioProcessor&);
@@ -14,5 +14,9 @@ public:
 
 private:
     MyFirstPluginAudioProcessor& audioProcessor;
+
+    juce::Slider feedbackSlider;
+    std::unique_ptr<juce::AudioProcessorValueTreeState::SliderAttachment> feedbackAttachment;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MyFirstPluginAudioProcessorEditor)
 };

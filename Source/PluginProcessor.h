@@ -31,9 +31,13 @@ public:
     void getStateInformation(juce::MemoryBlock& destData) override;
     void setStateInformation(const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState& getState() { return parameters; }
+
 private:
     juce::AudioBuffer<float> delayBuffer;
     int delayWritePosition = 0;
+
+    juce::AudioProcessorValueTreeState parameters;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MyFirstPluginAudioProcessor)
 };
