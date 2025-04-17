@@ -32,6 +32,7 @@ void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
     const int numSamples = buffer.getNumSamples();
     const int delayBufferSize = delayBuffer.getNumSamples();
     const int delayTimeInSamples = 4800; // ~0.1 sec delay at 48kHz
+    const float feedback = 0.5f;         // Feedback amount (can go negative for different comb behavior)
 
     for (int channel = 0; channel < numChannels; ++channel)
     {
@@ -40,18 +41,20 @@ void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
 
         for (int i = 0; i < numSamples; ++i)
         {
-            int delayReadPosition = (delayWritePosition + i - delayTimeInSamples + delayBufferSize) % delayBufferSize;
-            float delayedSample = delayData[delayReadPosition];
+            const int readPosition = (delayWritePosition + i - delayTimeInSamples + delayBufferSize) % delayBufferSize;
+            const int writePosition = (delayWritePosition + i) % delayBufferSize;
 
-            // Write current sample to delay buffer
-            delayData[(delayWritePosition + i) % delayBufferSize] = channelData[i];
+            float delayedSample = delayData[readPosition];
 
-            // Mix in delayed sample
-            channelData[i] += 0.5f * delayedSample;
+            // Write input + feedback into delay buffer
+            delayData[writePosition] = channelData[i] + (feedback * delayedSample);
+
+            // Mix delayed sample with dry signal (simple mix here — you could separate dry/wet later)
+            channelData[i] += delayedSample;
         }
     }
 
-    delayWritePosition = (delayWritePosition + numSamples) % delayBuffer.getNumSamples();
+    delayWritePosition = (delayWritePosition + numSamples) % delayBufferSize;
 }
 
 bool MyFirstPluginAudioProcessor::hasEditor() const { return true; }
