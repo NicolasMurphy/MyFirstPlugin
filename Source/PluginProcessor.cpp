@@ -16,20 +16,47 @@ void MyFirstPluginAudioProcessor::setCurrentProgram(int) {}
 const juce::String MyFirstPluginAudioProcessor::getProgramName(int) { return {}; }
 void MyFirstPluginAudioProcessor::changeProgramName(int, const juce::String&) {}
 
-void MyFirstPluginAudioProcessor::prepareToPlay(double, int) {}
+void MyFirstPluginAudioProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
+{
+    const int delayBufferSize = static_cast<int>(2.0 * sampleRate); // 2 seconds max delay
+    delayBuffer.setSize(getTotalNumOutputChannels(), delayBufferSize);
+    delayBuffer.clear();
+    delayWritePosition = 0;
+}
+
 void MyFirstPluginAudioProcessor::releaseResources() {}
 
-void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&) {
-    for (int channel = 0; channel < buffer.getNumChannels(); ++channel) {
-        float* data = buffer.getWritePointer(channel);
-        for (int i = 0; i < buffer.getNumSamples(); ++i) {
-            data[i] *= 0.5f;  // Simple gain reduction
+void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer&)
+{
+    const int numChannels = buffer.getNumChannels();
+    const int numSamples = buffer.getNumSamples();
+    const int delayBufferSize = delayBuffer.getNumSamples();
+    const int delayTimeInSamples = 4800; // ~0.1 sec delay at 48kHz
+
+    for (int channel = 0; channel < numChannels; ++channel)
+    {
+        float* channelData = buffer.getWritePointer(channel);
+        float* delayData = delayBuffer.getWritePointer(channel);
+
+        for (int i = 0; i < numSamples; ++i)
+        {
+            int delayReadPosition = (delayWritePosition + i - delayTimeInSamples + delayBufferSize) % delayBufferSize;
+            float delayedSample = delayData[delayReadPosition];
+
+            // Write current sample to delay buffer
+            delayData[(delayWritePosition + i) % delayBufferSize] = channelData[i];
+
+            // Mix in delayed sample
+            channelData[i] += 0.5f * delayedSample;
         }
     }
+
+    delayWritePosition = (delayWritePosition + numSamples) % delayBuffer.getNumSamples();
 }
 
 bool MyFirstPluginAudioProcessor::hasEditor() const { return true; }
-juce::AudioProcessorEditor* MyFirstPluginAudioProcessor::createEditor() {
+juce::AudioProcessorEditor* MyFirstPluginAudioProcessor::createEditor()
+{
     return new MyFirstPluginAudioProcessorEditor(*this);
 }
 

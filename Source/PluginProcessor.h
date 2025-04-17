@@ -10,7 +10,6 @@ public:
 
     void prepareToPlay(double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
-
     void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     juce::AudioProcessorEditor* createEditor() override;
@@ -33,5 +32,8 @@ public:
     void setStateInformation(const void* data, int sizeInBytes) override;
 
 private:
+    juce::AudioBuffer<float> delayBuffer;
+    int delayWritePosition = 0;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MyFirstPluginAudioProcessor)
 };
