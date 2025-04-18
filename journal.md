@@ -8,6 +8,8 @@
 - ⏳ Rename "Feedback" to "Resonance"
 - ⏳ Rename "Delay" to "Frequency"
 - ⏳ Currently using a 50/50 wet/dry mix (`channelData[i] += delayedSample;`). Consider testing 100% wet mode later by replacing it with `channelData[i] = delayedSample;` to better match traditional comb filter behavior. This can be found in PluginProcessor.cpp line 70.
+- ⏳ 200% feedback is too much, change to 150%, maybe less
+-
 
 ### Notes
 -
@@ -31,17 +33,16 @@
   - Different modes (explore Zebra's comb filter)
 
 ### Notes
-- Damping is currently hardcoded to ~4kHz but is dynamically mapped to delay time for a more natural, "physical model"-like tone.
+- Damping is currently hardcoded to ~4kHz but is dynamically mapped to delay time for a more natural, "physical model"-like tone. Perhaps adjusting the hardcoded value and way this is dynamically mapped can be how I can implement different "modes".
 - Delay slider now ranges from 9 to 2400 samples, emphasizing the most musically useful comb range.
 - Skew factor added for better control at lower (pitched) delay values.
-- Next up: interpolation to prevent glitching when delay is modulated.
--
+- Next up: interpolation to prevent glitching when delay is modulated. Although not noticing this when testing in DAW.
 
 
 ## 2025-04-16
 
 ### Goals
-- Initial setup and proof of concept using a simple delay effect.
+- Initial setup and proof of concept using a simple delay effect
 
 ### Notes
 - Current development workflow:
