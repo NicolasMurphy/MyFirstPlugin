@@ -33,11 +33,14 @@ public:
 
     juce::AudioProcessorValueTreeState& getState() { return parameters; }
 
-private:
+    private:
     juce::AudioBuffer<float> delayBuffer;
     int delayWritePosition = 0;
+
+    juce::OwnedArray<juce::IIRFilter> dampingFilters; // One filter per channel
 
     juce::AudioProcessorValueTreeState parameters;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MyFirstPluginAudioProcessor)
+
 };

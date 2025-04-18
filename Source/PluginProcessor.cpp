@@ -5,7 +5,7 @@ MyFirstPluginAudioProcessor::MyFirstPluginAudioProcessor()
     : parameters(*this, nullptr, juce::Identifier("Params"),
         {
             std::make_unique<juce::AudioParameterFloat>("feedback", "Feedback", -2.0f, 2.0f, 0.5f),
-            std::make_unique<juce::AudioParameterFloat>("delayTime", "Delay Time", 1.0f, 48000.0f, 4800.0f)
+            std::make_unique<juce::AudioParameterFloat>("delayTime", "Delay Time", 9.0f, 2400.0f, 480.0f)
         })
 {}
 
@@ -29,6 +29,15 @@ void MyFirstPluginAudioProcessor::prepareToPlay(double sampleRate, int)
     delayBuffer.setSize(getTotalNumOutputChannels(), delayBufferSize);
     delayBuffer.clear();
     delayWritePosition = 0;
+
+    // Initialize one damping filter per output channel
+    dampingFilters.clear();
+    for (int i = 0; i < getTotalNumOutputChannels(); ++i)
+    {
+        auto* filter = new juce::IIRFilter();
+        filter->setCoefficients(juce::IIRCoefficients::makeLowPass(sampleRate, 4000.0)); // 4kHz cutoff
+        dampingFilters.add(filter);
+    }
 }
 
 void MyFirstPluginAudioProcessor::releaseResources() {}
@@ -52,9 +61,14 @@ void MyFirstPluginAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer,
             const int readPosition = (delayWritePosition + i - delayTimeInSamples + delayBufferSize) % delayBufferSize;
             const int writePosition = (delayWritePosition + i) % delayBufferSize;
 
-            float delayedSample = delayData[readPosition];
+            float dampingCutoff = 200.0f + 10000.0f * std::pow(0.5f, delayTimeInSamples / 5000.0f);
+            dampingFilters[channel]->setCoefficients(juce::IIRCoefficients::makeLowPass(getSampleRate(), dampingCutoff));
+
+            float delayedSample = dampingFilters[channel]->processSingleSampleRaw(delayData[readPosition]);
+
             delayData[writePosition] = channelData[i] + (feedback * delayedSample);
             channelData[i] += delayedSample;
+
         }
     }
 

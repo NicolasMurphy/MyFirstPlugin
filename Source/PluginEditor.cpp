@@ -16,7 +16,9 @@ MyFirstPluginAudioProcessorEditor::MyFirstPluginAudioProcessorEditor(MyFirstPlug
     // Delay slider
     delaySlider.setSliderStyle(juce::Slider::LinearHorizontal);
     delaySlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 60, 20);
-    delaySlider.setRange(1.0f, 48000.0f, 1.0f);
+    delaySlider.setRange(9.0f, 2400.0f, 1.0f); // Delay in samples
+    delaySlider.setSkewFactorFromMidPoint(100.0f); // Emphasize lower end (musical range)
+
     addAndMakeVisible(delaySlider);
 
     delayAttachment = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(
