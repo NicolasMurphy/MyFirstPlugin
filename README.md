@@ -1,10 +1,9 @@
 # MyFirstPlugin
 
-This is my first experiment in building audio plugins using JUCE and C++.
-The plugin currently implements a **basic delay effect** with user-adjustable **feedback** and **delay time**.
+This is an early-stage experiment in building audio plugins using JUCE and C++.
 
-The long-term goal is to progressively build up to more complex audio effects,
-with a specific aim to implement a **comb filter** in the future.
+The project is inspired by Reason’s Thor comb filter - particularly its ability to push resonance beyond 100%.
+The goal is to explore comb filtering and delay-based effects, and eventually introduce unique twists of my own, though the final direction is still evolving.
 
 ### Tools Used
 - C++17
