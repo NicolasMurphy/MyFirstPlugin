@@ -3,8 +3,10 @@
 ## 2025-04-18
 
 ### Goals
-- Begin prototyping a pitch-based comb filter by mapping a frequency control to delay time and refining the feedback loop accordingly.
-- Preserve the existing delay-time control for experimentation, and consider adding a mode toggle or separating frequency control into a dedicated UI section.
+- Add damping
+- Add interpolation
+- Future enhancements: Logarithmic frequency mapping, polarity switch.
+- Potential future enhancements: Saturation, Stereo spread / detuning, freezing?, exciters?
 
 ### Notes
 -
