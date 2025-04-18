@@ -12,7 +12,13 @@
 -
 
 ### Notes
--
+- While testing on other machines:
+  - The plugin crashed on a Windows system (possibly due to the joke version - need to test with the current build).
+  - It failed to scan on a Mac, showing up as a "document" instead of a plugin bundle.
+- Further research indicates this is due to OS-level differences: VST3 plugins must be built natively for each platform.
+- Specifically, macOS plugins must be compiled on a Mac using Xcode, as they rely on bundle structures and Mach-O binaries.
+- Long-term, it would be ideal to create platform-specific installers for both Windows and macOS. This isn't a current priority, so it's being tracked here in notes rather than goals.
+
 
 
 ## 2025-04-17
