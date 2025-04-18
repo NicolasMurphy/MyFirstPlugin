@@ -1,6 +1,6 @@
 # Development Journal
 
-## 2025-04-19
+## 2025-04-18
 
 ### Goals
 - ⏳ Add interpolation for smooth delay-time sweeps
@@ -13,7 +13,7 @@
 -
 
 
-## 2025-04-18
+## 2025-04-17
 
 ### Goals
 - ✅ Add damping (low-pass filter in feedback path)
@@ -38,7 +38,7 @@
 -
 
 
-## 2025-04-17
+## 2025-04-16
 
 ### Goals
 - Initial setup and proof of concept using a simple delay effect.
